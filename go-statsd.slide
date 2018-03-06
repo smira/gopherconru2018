@@ -1,0 +1,226 @@
+
+Building efficient statsd library in Go
+GopherconRu
+17 Mar 2018
+
+Andrey Smirnov
+Principal Software Developer, Virtustream
+me@smira.ru
+http://github.com/smira/gopherconru2018
+@smira
+
+* Introducing statsd
+
+Statsd is a simple protocol to deliver metrics from services to aggregator (statsd server).
+
+E.g. `service.requests.http.count:1|c` increments counter *service.requests.http.count* by 1.
+
+.image images/statsd1.png
+
+* Protocol
+
+Statsd used UDP-based text protocol. Metric updates could be packed into single UDP datagram and delivered to statsd server.
+
+Statsd server aggregates all the metric samples and aggregated metrics to some time-series database every aggregation interval.
+
+_Footnote_: statsd supports both UDP and TCP, and [[https://github.com/statsite/statsite][binary protocol]] is available.
+
+* Pros and cons
+
+Pros:
+
+- lightweight
+- TSDB-agnostic
+- low load on TSDB
+
+Cons:
+
+- fixed metric resolution
+- hard to track specific instance
+- high pps
+
+* Goal
+
+Build high-performance low GC-pressure library to send statsd metrics from Go application.
+
+- minimum performance impact to the application
+- zero-allocation per metric sample
+- high throughput
+
+* First Version
+
+* Connection per Call
+
+Connect socket/close connection on each metric sample.
+
+.code -numbers stage1/client.go /START OMIT/,/END OMIT/
+
+* Run Benchmark
+
+* NO. STOP. DON'T DO IT YET
+
+* Add Unit (Functional) Tests
+
+Make sure your code works as intended before trying to benchmark or optimize it.
+
+.code -numbers stage1/client_test.go /START TESTINCR OMIT/,/END TESTINCR OMIT/
+
+.code stage1/gotest.out
+
+* Concurrent Test
+
+Statsd client is supposed to be called concurrently from multiple goroutines, so correctness should be verified.
+
+.code -numbers stage1/client_test.go /START CONCURRENT TEST OMIT/,/END CONCURRENT TEST OMIT/
+
+* Run with -race
+
+.code stage1/gotestrace.out
+
+Hoorah!
+
+No doubt test passes, as client doesn't have any shared state.
+
+* Benchmark
+
+.code -numbers stage1/client_test.go /START BENCHMARK OMIT/,/END BENCHMARK OMIT/
+
+.code stage1/gobench.out
+
+* Second Version
+
+* Connection per Client
+
+We don't need to connect UDP socket each time (and that might include DNS lookup if using hostnames).
+
+Can we share single socket across multiple goroutines? With UDP, yes.
+
+.code -numbers stage2/client.go /START OMIT/,/END OMIT/
+
+* Measure Improvement
+
+.code stage2/gobench.out
+
+Let's compare with the previous version:
+
+.code stage2/gobenchcmp.out
+
+Pretty significant change? :)
+
+* Third Version
+
+* Why So Many Allocs?
+
+Benchmark shows `328` `B/op`, `12` `allocs/op` for one line of code:
+
+.code stage2/excerpt
+
+Why so many allocations? Let's try to do memory profiling for one of the testcases:
+
+.code stage2/profile.txt
+
+* Memory Allocations
+
+.image images/pprof.png
+
+* Removing fmt.Printf()
+
+Can we remove `fmt.Printf()`?
+
+Yes, as format is fixed:
+
+.code -numbers stage3/client.go /START OMIT/,/END OMIT/
+
+* Measure Improvement
+
+.code stage3/gobench.out
+
+Let's compare with previous version:
+
+.code stage3/gobenchcmp.out
+
+* Fourth Version
+
+* Aggregating Writes
+
+Our client sends single metric value in UDP packet, while statsd server can accept any number of metric samples up to UDP packet size. Samples should be separated with `\n`.
+
+Aggregating many metrics in a single packet should improve performance both for client and server.
+
+* Aggregating Writes
+
+.code -numbers stage4/client.go /START OMIT/,/END OMIT/
+
+* Benchmark
+
+.code stage4/gobench.out
+
+.code stage4/gobenchcmp.out
+
+Amazing!
+
+Is it?
+
+* Test (Before Benchmark!)
+
+.code stage4/gotestcommands.out
+
+If we add concurrency:
+
+.code stage4/gotestconcurrent.out
+
+Oops...
+
+* Race Detector
+
+.code stage4/gotestrace.out
+
+* Fifth Version
+
+* Proper Locking
+
+We need to protect access to packet with mutex:
+
+.code -numbers stage5/client.go /START OMIT/,/END OMIT/
+
+This reduces concurrency (all statsd operations are seralized), and the worst
+thing that socket operations are covered with the same lock.
+
+* Benchmark Correct Version
+
+.code stage5/gobench.out
+
+.code stage5/gobenchcmp.out
+
+Still amazing improvement!
+
+_Note_: this benchmark sends UDP packet over `localhost`, so networking overhead is negligible. In real world use case 
+
+* Further Improvements
+
+- decouple networking operations and application code path
+- scale out network send operations
+- reconnect UDP socket on interval to follow DNS changes
+- buffer pool
+- periodic flush of incomplete packets
+
+* github.com/smira/go-statsd
+
+* Benchmark
+
+.code go-statsd/gobench.out
+
+Just 2x faster than our last (simple) version.
+
+Architecture:
+
+* Closing Remarks
+
+* TODO
+
+- slide s vyvodami
+- diagramma buffery
+- pprof, race-detector
+- benchstat vs. benchcmp
+- OS X vs Linux
+- localhost vs. network

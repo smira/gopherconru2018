@@ -1,0 +1,15 @@
+$ go test -memprofile mem.prof -memprofilerate 1 -run 'Concurrent'
+PASS
+ok  	github.com/smira/gopherconru2018/stage2	1.529s
+$ go tool pprof -alloc_space mem.prof
+(pprof) top 5
+Showing nodes accounting for 52.25MB, 99.73% of 52.40MB total
+Dropped 142 nodes (cum <= 0.26MB)
+Showing top 5 nodes out of 7
+      flat  flat%   sum%        cum   cum%
+      48MB 91.62% 91.62%       48MB 91.62%  stage2.setupListener.func1
+    1.75MB  3.34% 94.96%     2.82MB  5.39%  stage2.(*Client).Incr
+       1MB  1.91% 96.87%     1.04MB  1.99%  fmt.Sprintf
+       1MB  1.91% 98.77%     1.50MB  2.86%  stage2.TestConcurrent.func1
+    0.50MB  0.95% 99.73%     0.50MB  0.95%  strings.genSplit
+(pprof) web Incr

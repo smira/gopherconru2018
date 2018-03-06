@@ -1,0 +1,8 @@
+benchmark             old ns/op     new ns/op     delta
+BenchmarkClient-8     17994         15083         -16.18%
+
+benchmark             old allocs     new allocs     delta
+BenchmarkClient-8     12             6              -50.00%
+
+benchmark             old bytes     new bytes     delta
+BenchmarkClient-8     328           240           -26.83%

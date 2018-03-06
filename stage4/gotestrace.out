@@ -1,0 +1,19 @@
+$ go test -run TestConcurrent -race -v
+=== RUN   TestConcurrent
+==================
+WARNING: DATA RACE
+Read at 0x00c42008c690 by goroutine 11:
+  github.com/smira/gopherconru2018/stage4.(*Client).checkBuf()
+      /Users/smira/Documents/go/src/github.com/smira/gopherconru2018/stage4/client.go:48 +0x48
+  github.com/smira/gopherconru2018/stage4.(*Client).Incr()
+      /Users/smira/Documents/go/src/github.com/smira/gopherconru2018/stage4/client.go:58 +0x61
+  github.com/smira/gopherconru2018/stage4.TestConcurrent.func2()
+      /Users/smira/Documents/go/src/github.com/smira/gopherconru2018/stage4/client_test.go:123 +0x99
+
+Previous write at 0x00c42008c690 by goroutine 12:
+  github.com/smira/gopherconru2018/stage4.(*Client).Incr()
+      /Users/smira/Documents/go/src/github.com/smira/gopherconru2018/stage4/client.go:62 +0x189
+  github.com/smira/gopherconru2018/stage4.TestConcurrent.func2()
+      /Users/smira/Documents/go/src/github.com/smira/gopherconru2018/stage4/client_test.go:123 +0x99
+
+...

@@ -1,0 +1,11 @@
+$ go test -run TestConcurrent -v
+=== RUN   TestConcurrent
+panic: runtime error: slice bounds out of range
+
+goroutine 8 [running]:
+github.com/smira/gopherconru2018/stage4.TestConcurrent.func1(0xc42007c300, 0xc4200b80f0, 0xc4200163e8, 0xc4200163f0)
+	/Users/smira/Documents/go/src/github.com/smira/gopherconru2018/stage4/client_test.go:98 +0x374
+created by github.com/smira/gopherconru2018/stage4.TestConcurrent
+	/Users/smira/Documents/go/src/github.com/smira/gopherconru2018/stage4/client_test.go:87 +0x16f
+exit status 2
+FAIL	github.com/smira/gopherconru2018/stage4	0.048s

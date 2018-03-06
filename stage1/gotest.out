@@ -1,0 +1,11 @@
+$ go test -v .
+=== RUN   TestCommands
+=== RUN   TestCommands/Incr
+=== RUN   TestCommands/PrecisionTiming
+--- PASS: TestCommands (0.00s)
+    --- PASS: TestCommands/Incr (0.00s)
+    --- PASS: TestCommands/PrecisionTiming (0.00s)
+=== RUN   TestConcurrent
+--- PASS: TestConcurrent (1.10s)
+PASS
+ok  	github.com/smira/gopherconru2018/stage1	1.116s

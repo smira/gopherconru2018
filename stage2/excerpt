@@ -1,0 +1,1 @@
+c.sock.Write([]byte(fmt.Sprintf("%s:%d|c", stat, value)))
