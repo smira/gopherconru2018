@@ -75,6 +75,8 @@ Statsd client is supposed to be called concurrently from multiple goroutines, so
 
 * Run with -race
 
+Go race detector recompiles source with data access instrumentation which catches data races.
+
 .code stage1/gotestrace.out
 
 Hoorah!
@@ -85,7 +87,19 @@ No doubt test passes, as client doesn't have any shared state.
 
 .code -numbers stage1/client_test.go /START BENCHMARK OMIT/,/END BENCHMARK OMIT/
 
-.code stage1/gobench.out
+(Micro)benchmark runs function `N` times and captures performance metrics, plus several iterations to get statistically significant results:
+
+    $ go test -bench . -benchmem -run nothing -count 5
+
+.code stage1/gobench.txt
+
+* Process Results
+
+`benchstat` is a great tool to render results in human-readable way:
+
+    $ benchstat gobench.txt
+
+.code stage1/gobenchstat.txt
 
 * Second Version
 
@@ -99,13 +113,7 @@ Can we share single socket across multiple goroutines? With UDP, yes.
 
 * Measure Improvement
 
-.code stage2/gobench.out
-
-Let's compare with the previous version:
-
-.code stage2/gobenchcmp.out
-
-Pretty significant change? :)
+.code stage2/gobenchstat.txt
 
 * Third Version
 
@@ -133,11 +141,7 @@ Yes, as format is fixed:
 
 * Measure Improvement
 
-.code stage3/gobench.out
-
-Let's compare with previous version:
-
-.code stage3/gobenchcmp.out
+.code stage3/gobenchstat.txt
 
 * Fourth Version
 
@@ -153,9 +157,7 @@ Aggregating many metrics in a single packet should improve performance both for 
 
 * Benchmark
 
-.code stage4/gobench.out
-
-.code stage4/gobenchcmp.out
+.code stage4/gobenchstat.txt
 
 Amazing!
 
@@ -188,13 +190,14 @@ thing that socket operations are covered with the same lock.
 
 * Benchmark Correct Version
 
-.code stage5/gobench.out
-
-.code stage5/gobenchcmp.out
+.code stage5/gobenchstat.txt
 
 Still amazing improvement!
 
-_Note_: this benchmark sends UDP packet over `localhost`, so networking overhead is negligible. In real world use case 
+_Note_: this benchmark sends UDP packet over `localhost`, so networking overhead is negligible. Real network
+might incur much higher latency.
+
+Benchmark on runtime platform (e.g. OS X vs. Linux).
 
 * Further Improvements
 
@@ -204,23 +207,29 @@ _Note_: this benchmark sends UDP packet over `localhost`, so networking overhead
 - buffer pool
 - periodic flush of incomplete packets
 
+Architecture:
+
+
+
 * github.com/smira/go-statsd
 
 * Benchmark
 
-.code go-statsd/gobench.out
+.code go-statsd/gobenchstat.txt
 
 Just 2x faster than our last (simple) version.
 
-Architecture:
+* Conclusion
 
-* Closing Remarks
+- microbenchmarks ([[https://dave.cheney.net/2013/06/30/how-to-write-benchmarks-in-go][go test -bench]], [[https://godoc.org/golang.org/x/perf/cmd/benchstat][benchstat]])
+- profiling ([[https://blog.golang.org/profiling-go-programs][go tool pprof]])
+- race detector ([[https://blog.golang.org/race-detector][go test -race]])
+
+Overall improvement (`1/400` time, zero allocation):
+
+.code stage5/gobenchstatoverall.txt
 
 * TODO
 
-- slide s vyvodami
 - diagramma buffery
-- pprof, race-detector
-- benchstat vs. benchcmp
-- OS X vs Linux
-- localhost vs. network
+- arch diagram

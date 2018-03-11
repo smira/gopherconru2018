@@ -1,0 +1,8 @@
+name        time/op
+GoStatsd-8  320ns ± 3%
+
+name        alloc/op
+GoStatsd-8  0.00B     
+
+name        allocs/op
+GoStatsd-8   0.00     

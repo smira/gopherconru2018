@@ -177,8 +177,8 @@ func BenchmarkClient(b *testing.B) {
 
 	b.ResetTimer()
 
-	for i := 0; i < b.N; i++ {
-		client.Incr("request.count", 33)
+	for i := 0; i < b.N; i++ { // HL
+		client.Incr("request.count", 33) // HL
 		client.PrecisionTiming("response.time.for.some.api", 150*time.Millisecond)
 		client.PrecisionTiming("response.time.for.some.api.case1", 150*time.Millisecond)
 	}
