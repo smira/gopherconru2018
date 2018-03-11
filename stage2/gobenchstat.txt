@@ -1,0 +1,8 @@
+name      old time/op    new time/op    delta
+Client-8     275µs ± 6%      14µs ± 6%  -94.98%  (p=0.008 n=5+5)
+
+name      old alloc/op   new alloc/op   delta
+Client-8    2.03kB ± 0%    0.33kB ± 0%  -83.86%  (p=0.008 n=5+5)
+
+name      old allocs/op  new allocs/op  delta
+Client-8      48.0 ± 0%      12.0 ± 0%  -75.00%  (p=0.008 n=5+5)

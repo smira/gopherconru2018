@@ -1,3 +1,0 @@
-BenchmarkClient-8   	  100000	     17994 ns/op	     328 B/op	      12 allocs/op
-PASS
-ok  	github.com/smira/gopherconru2018/stage2	2.007s

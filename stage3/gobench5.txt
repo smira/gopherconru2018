@@ -1,0 +1,10 @@
+goos: darwin
+goarch: amd64
+pkg: github.com/smira/gopherconru2018/stage3
+BenchmarkClient-8   	  200000	     11506 ns/op	     240 B/op	       6 allocs/op
+BenchmarkClient-8   	  200000	     11024 ns/op	     240 B/op	       6 allocs/op
+BenchmarkClient-8   	  200000	     11031 ns/op	     240 B/op	       6 allocs/op
+BenchmarkClient-8   	  200000	     11185 ns/op	     240 B/op	       6 allocs/op
+BenchmarkClient-8   	  200000	     11098 ns/op	     240 B/op	       6 allocs/op
+PASS
+ok  	github.com/smira/gopherconru2018/stage3	11.749s

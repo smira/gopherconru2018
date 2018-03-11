@@ -1,0 +1,8 @@
+name      time/op
+Client-8   275µs ± 6%
+
+name      alloc/op
+Client-8  2.03kB ± 0%
+
+name      allocs/op
+Client-8    48.0 ± 0%
