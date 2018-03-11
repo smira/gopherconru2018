@@ -151,6 +151,8 @@ Our client sends single metric value in UDP packet, while statsd server can acce
 
 Aggregating many metrics in a single packet should improve performance both for client and server.
 
+.image images/buffer.png
+
 * Aggregating Writes
 
 .code -numbers stage4/client.go /START OMIT/,/END OMIT/
@@ -207,8 +209,9 @@ Benchmark on runtime platform (e.g. OS X vs. Linux).
 - buffer pool
 - periodic flush of incomplete packets
 
-Architecture:
+* Architecture
 
+.image images/arch.png
 
 
 * github.com/smira/go-statsd
@@ -224,12 +227,8 @@ Just 2x faster than our last (simple) version.
 - microbenchmarks ([[https://dave.cheney.net/2013/06/30/how-to-write-benchmarks-in-go][go test -bench]], [[https://godoc.org/golang.org/x/perf/cmd/benchstat][benchstat]])
 - profiling ([[https://blog.golang.org/profiling-go-programs][go tool pprof]])
 - race detector ([[https://blog.golang.org/race-detector][go test -race]])
+- production library ([[https://github.com/smira/go-statsd][github.com/smira/go-statsd]])
 
 Overall improvement (`1/400` time, zero allocation):
 
 .code stage5/gobenchstatoverall.txt
-
-* TODO
-
-- diagramma buffery
-- arch diagram
