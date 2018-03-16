@@ -1,3 +1,6 @@
+# This presentation is licensed under the
+# Creative Commons Attribution-ShareAlike 4.0 International license:
+# https://creativecommons.org/licenses/by-sa/4.0/
 
 Building efficient statsd library in Go
 GopherconRu
@@ -19,9 +22,9 @@ E.g. `service.requests.http.count:1|c` increments counter *service.requests.http
 
 * Protocol
 
-Statsd used UDP-based text protocol. Metric updates could be packed into single UDP datagram and delivered to statsd server.
+Statsd uses UDP-based text protocol. Metric updates could be packed into single UDP datagram and delivered to statsd server.
 
-Statsd server aggregates all the metric samples and aggregated metrics to some time-series database every aggregation interval.
+Statsd server aggregates all the metric samples and sends aggregated metrics to some time-series database every aggregation interval.
 
 _Footnote_: statsd supports both UDP and TCP, and [[https://github.com/statsite/statsite][binary protocol]] is available.
 
@@ -95,7 +98,7 @@ No doubt test passes, as client doesn't have any shared state.
 
 * Process Results
 
-`benchstat` is a great tool to render results in human-readable way:
+`benchstat` is a great tool to render results in a human-readable way:
 
     $ benchstat gobench.txt
 
@@ -112,6 +115,9 @@ Can we share single socket across multiple goroutines? With UDP, yes.
 .code -numbers stage2/client.go /START OMIT/,/END OMIT/
 
 * Measure Improvement
+
+    $ go test -bench . -benchmem -run nothing -count 5 > new.txt
+    $ benchstat old.txt new.txt
 
 .code stage2/gobenchstat.txt
 
@@ -187,8 +193,7 @@ We need to protect access to packet with mutex:
 
 .code -numbers stage5/client.go /START OMIT/,/END OMIT/
 
-This reduces concurrency (all statsd operations are seralized), and the worst
-thing that socket operations are covered with the same lock.
+This reduces concurrency (all statsd operations are seralized), and the worst thing is that socket operations are covered with the same lock.
 
 * Benchmark Correct Version
 
@@ -196,8 +201,7 @@ thing that socket operations are covered with the same lock.
 
 Still amazing improvement!
 
-_Note_: this benchmark sends UDP packet over `localhost`, so networking overhead is negligible. Real network
-might incur much higher latency.
+_Note_: this benchmark sends UDP packet over `localhost`, so networking overhead is negligible. Real network might incur much higher latency.
 
 Benchmark on runtime platform (e.g. OS X vs. Linux).
 
@@ -229,6 +233,6 @@ Just 2x faster than our last (simple) version.
 - race detector ([[https://blog.golang.org/race-detector][go test -race]])
 - production library ([[https://github.com/smira/go-statsd][github.com/smira/go-statsd]])
 
-Overall improvement (`1/400` time, zero allocation):
+Overall improvement (`1/400th` of time, zero allocation):
 
 .code stage5/gobenchstatoverall.txt

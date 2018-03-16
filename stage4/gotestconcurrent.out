@@ -1,6 +1,6 @@
 $ go test -run TestConcurrent -v
 === RUN   TestConcurrent
-panic: runtime error: slice bounds out of range
+panic: runtime error: slice bounds out of range // HL
 
 goroutine 8 [running]:
 github.com/smira/gopherconru2018/stage4.TestConcurrent.func1(0xc42007c300, 0xc4200b80f0, 0xc4200163e8, 0xc4200163f0)

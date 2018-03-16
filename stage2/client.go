@@ -12,7 +12,7 @@ type Client struct {
 
 // START OMIT
 func NewClient(endpoint string) *Client {
-	sock, err := net.Dial("udp", endpoint)
+	sock, err := net.Dial("udp", endpoint) // HL
 	if err != nil {
 		panic(err)
 	}
