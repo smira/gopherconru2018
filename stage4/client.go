@@ -46,7 +46,7 @@ func NewClient(endpoint string) *Client {
 // START OMIT
 func (c *Client) checkBuf(required int) error {
 	if len(c.buf)+required > cap(c.buf) && len(c.buf) > 0 { // HL
-		_, err := c.sock.Write(c.buf[0 : len(c.buf)-1]) // chop off last \n
+		_, err := c.sock.Write(c.buf[0 : len(c.buf)-1]) // chop off last \n // HLrace
 		c.buf = c.buf[0:0]
 		return err
 	}
@@ -59,7 +59,7 @@ func (c *Client) Incr(stat string, value int64) error {
 		return err
 	}
 
-	c.buf = append(c.buf, []byte(stat)...)
+	c.buf = append(c.buf, []byte(stat)...) // HLrace
 	c.buf = append(c.buf, ':')
 	c.buf = strconv.AppendInt(c.buf, value, 10)
 	c.buf = append(c.buf, []byte("|c\n")...)

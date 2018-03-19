@@ -125,7 +125,7 @@ Can we share single socket across multiple goroutines? With UDP, yes.
 
 * Why So Many Allocs?
 
-Benchmark shows `328` `B/op`, `12` `allocs/op` for one line of code:
+Benchmark shows `328` `B/op`, `12` `allocs/op` for 3 lines of code similar to:
 
 .code stage2/excerpt
 
@@ -184,6 +184,10 @@ Oops...
 * Race Detector
 
 .code stage4/gotestrace.out
+
+* Where is the bug?
+
+.code -numbers stage4/client.go /START OMIT/,/END OMIT/ HLrace
 
 * Fifth Version
 
